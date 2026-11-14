@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pocket Ball</title>
+<style>
+:root{--bg:#f4f1ea;--fg:#1d1d1b;--btn:#1d1d1b;--btnfg:#f4f1ea;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171716;--fg:#ecebe6;--btn:#ecebe6;--btnfg:#171716}}
+:root[data-theme="dark"]{--bg:#171716;--fg:#ecebe6;--btn:#ecebe6;--btnfg:#171716}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+body{background:var(--bg);display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px}
+canvas{width:100%;max-width:900px;height:auto;touch-action:none;border-radius:14px;display:block}
+.bar{display:flex;flex-direction:column;gap:8px;align-items:center;font-size:17px;text-align:center}
+button{background:var(--btn);color:var(--btnfg);border:0;border-radius:8px;padding:8px 16px;font-size:16px;cursor:pointer}
+p{margin:0;opacity:.7;font-size:14px;text-align:center}
+.bar:not([style]){display:contents}
+#s{order:0;max-width:900px;text-align:center;font-size:17px}
+canvas{order:1}
+#hint{order:2}
+.bar>span{order:3;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;width:100%;max-width:900px}
+.bar[style]{order:4}
+details{order:5}
+p{order:6}
+button,select{width:100%;font-size:15px;padding:9px 10px;border-radius:8px}
+select{background:var(--bg);color:var(--fg);border:1px solid var(--btn)}
+#ov{position:fixed;inset:0;z-index:10;background:#0c0f0d;color:#fff;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center}
+#ov.h{display:none}
+#ov h1{margin:0;font-size:32px}
+#ov button{max-width:340px;font-size:18px;padding:16px;background:rgba(255,255,255,.93);color:#111;box-shadow:0 4px 14px rgba(0,0,0,.45)}
+#ov h1,#ov p{text-shadow:0 2px 10px rgba(0,0,0,.7)}
+#ov p{opacity:.95;font-size:16px}
+</style>
+</head>
+<body>
+<div id="ov"><svg id='ovbg' viewBox='0 0 1200 800' preserveAspectRatio='xMidYMid slice' style='position:absolute;inset:0;width:100%;height:100%;z-index:-1'><defs><radialGradient id='fe' cx='50%' cy='45%' r='70%'><stop offset='0' stop-color='#3cc487'/><stop offset='1' stop-color='#26a06a'/></radialGradient><linearGradient id='wd' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#6a1a1f'/><stop offset='1' stop-color='#43101a'/></linearGradient><radialGradient id='sn' cx='35%' cy='30%' r='75%'><stop offset='0' stop-color='#fff' stop-opacity='.85'/><stop offset='.4' stop-color='#fff' stop-opacity='0'/><stop offset='1' stop-color='#000' stop-opacity='.45'/></radialGradient><radialGradient id='lt' cx='50%' cy='40%' r='60%'><stop offset='0' stop-color='#fff' stop-opacity='.28'/><stop offset='1' stop-color='#fff' stop-opacity='0'/></radialGradient><g id='bl'><ellipse cx='4' cy='7' rx='22' ry='19' fill='#000' opacity='.3'/><circle r='22'/><circle r='22' fill='url(#sn)'/></g></defs><rect width='1200' height='800' fill='#0d2b3a'/><ellipse cx='600' cy='715' rx='520' ry='50' fill='#000' opacity='.45'/><rect x='60' y='110' width='1080' height='580' rx='46' fill='url(#wd)'/><rect x='112' y='162' width='976' height='476' rx='14' fill='url(#fe)'/><defs><radialGradient id='hl' cx='50%' cy='50%' r='50%'><stop offset='0' stop-color='#000'/><stop offset='.8' stop-color='#0a0a0a'/><stop offset='1' stop-color='#2a2a2a'/></radialGradient><path id='dm' d='M-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0z'/><g id='pk'><circle r='27' fill='#2d2d30' stroke='#0c0c0e' stroke-width='3'/></g></defs><rect x='112' y='162' width='976' height='476' rx='14' fill='none' stroke='#1c935d' stroke-width='24'/><rect x='112' y='162' width='976' height='476' rx='14' fill='none' stroke='#fff' stroke-opacity='.18' stroke-width='2'/><use href='#pk' x='120' y='170'/><use href='#pk' x='1080' y='170'/><use href='#pk' x='120' y='630'/><use href='#pk' x='1080' y='630'/><use href='#pk' x='600' y='162'/><use href='#pk' x='600' y='638'/><g fill='#fff'><use href='#dm' x='240' y='136'/><use href='#dm' x='360' y='136'/><use href='#dm' x='480' y='136'/><use href='#dm' x='720' y='136'/><use href='#dm' x='840' y='136'/><use href='#dm' x='960' y='136'/><use href='#dm' x='240' y='664'/><use href='#dm' x='360' y='664'/><use href='#dm' x='480' y='664'/><use href='#dm' x='720' y='664'/><use href='#dm' x='840' y='664'/><use href='#dm' x='960' y='664'/><use href='#dm' x='86' y='285'/><use href='#dm' x='86' y='400'/><use href='#dm' x='86' y='515'/><use href='#dm' x='1114' y='285'/><use href='#dm' x='1114' y='400'/><use href='#dm' x='1114' y='515'/></g><rect x='112' y='162' width='976' height='476' rx='14' fill='url(#lt)'/><use href='#bl' x='800' y='400' fill='#f2c230'/><use href='#bl' x='838' y='378' fill='#2556c8'/><use href='#bl' x='838' y='422' fill='#d63a2f'/><use href='#bl' x='876' y='356' fill='#6b2f9c'/><use href='#bl' x='876' y='400' fill='#111'/><use href='#bl' x='876' y='444' fill='#ee7f22'/><use href='#bl' x='520' y='470' fill='#1f8a4c'/><use href='#bl' x='340' y='400' fill='#f5f5f5'/><line x1='40' y1='590' x2='306' y2='418' stroke='#e8c98a' stroke-width='10' stroke-linecap='round'/><line x1='288' y1='429' x2='306' y2='418' stroke='#3b7dd8' stroke-width='10' stroke-linecap='round'/><rect width='1200' height='800' fill='#000' opacity='.5'/></svg><h1>🎱 Billiards</h1><p>Choose a game</p><button data-m="pocket">Pocket ball</button><button data-m="three">3 balls</button><button data-m="four">4 balls</button></div>
+<div class="bar"><div id="s"></div><span><select id="lv"><option value="easy">Computer: Easy</option><option value="normal" selected>Computer: Normal</option><option value="hard">Computer: Hard</option></select> <select id="rl"><option value="casual" selected>Rules: Casual</option><option value="std">Rules: Standard</option></select> <button id="mn">Menu</button> <button id="r">Reset</button> <button id="m">Sound: on</button> <button id="gd">Guide: on</button> <button id="sg">Show best shot</button> <button id="mv">Moves: on</button></span></div>
+<canvas id="c" width="800" height="500"></canvas>
+<div id="hint" style="min-height:2.8em;max-width:900px;text-align:center;font-size:15px"></div>
+<details style="max-width:900px;font-size:14px"><summary>Tips for wall (cushion) shots</summary><p style="text-align:left;margin-top:8px">1. A ball bounces off a wall like light off a mirror: it leaves at the same angle it came in.<br>2. To bank a shot, aim at a spot on the wall, not at the ball.<br>3. Look at the dashed line. Each orange number is one wall touch.<br>4. A soft shot is easier to control. A strong shot goes farther and bounces more.<br>5. Three-ball: you need 3 wall touches before the 2nd ball. Four-ball: your last point needs 1 wall touch before the 2nd red ball.</p></details>
+<div class="bar" style="flex-direction:row;gap:20px;flex-wrap:wrap;justify-content:center"><label>Rotate <input id="vr" type="range" min="0" max="360" value="0"></label><label>Tilt <input id="vt" type="range" min="0" max="60" value="0"></label></div>
+<p>Drag back from anywhere, then let go to shoot. Pull farther for more power.</p>
+<script>
+const c=document.getElementById('c'),g=c.getContext('2d'),R=10,M=28,W=800,H=400;
+const cols=['#fff','#f2c230','#2556c8','#d63a2f','#6b2f9c','#ee7f22','#1f8a4c','#8b1f2b','#111'];
+const POCKETS=[[M,M],[W-M,M],[M,H-M],[W-M,H-M],[W/2,M-3],[W/2,H-M+3]];let pockets=POCKETS;
+const nm=['Player','Computer'];let ac=null,mute=false,aiWait=false,sim=false;let mode='pocket',cs=[0,0];const goal=10;
+function snd(f,t,v){if(sim||mute||!ac||v<.03)return;const o=ac.createOscillator(),G=ac.createGain(),n=ac.currentTime;o.type='triangle';o.frequency.setValueAtTime(f,n);o.frequency.exponentialRampToValueAtTime(f*.5,n+t);G.gain.setValueAtTime(v,n);G.gain.exponentialRampToValueAtTime(.001,n+t);o.connect(G);G.connect(ac.destination);o.start();o.stop(n+t)}
+function fire(vx,vy){sugg=null;prev=balls.map(b=>({n:b.n,x:b.x,y:b.y,c:b.c}));moves=[];placed=null;const cue=balls.find(b=>b.n===0);const sp0=Math.hypot(vx,vy)||1;pend={vx,vy,t:Date.now(),ux:vx/sp0,uy:vy/sp0,sp:sp0};shot={first:null,pocketed:[],before:groups[turn]?left(turn):-1}}
+function blocked(sx,sy,ex,ey,a,b2){const dx=ex-sx,dy=ey-sy,L=dx*dx+dy*dy||1;return balls.some(o=>{if(o===a||o===b2)return false;let t=((o.x-sx)*dx+(o.y-sy)*dy)/L;t=Math.max(0,Math.min(1,t));return Math.hypot(o.x-(sx+t*dx),o.y-(sy+t*dy))<2*R-1})}
+function caromSetup(){
+  balls=[{n:0,c:'#f5f5f5',x:200,y:150,vx:0,vy:0},{n:1,c:'#f2d230',x:200,y:260,vx:0,vy:0},{n:2,c:'#d63a2f',x:560,y:200,vx:0,vy:0}];
+  if(mode==='four'){balls[2].y=150;balls.push({n:3,c:'#d63a2f',x:560,y:250,vx:0,vy:0})}
+  turn=0;groups=[null,null];inHand=false;over=false;shot=null;cs=[0,0];
+  msg=mode==='four'?'Hit both red balls. The last point must touch a wall first.':'Your cue ball must touch 3 walls, then hit both other balls.';
+  ui();
+}
+function swapCues(){const a=balls.find(b=>b.n===0),b=balls.find(b=>b.n===1);if(a&&b){a.n=1;b.n=0}}
+function resolveCarom(s){
+  const me=turn,other=1-turn,h=s.hits||[];
+  let pts=0,foul=false,late=false;
+  if(mode==='four'){if(!h.length||h.includes(1))foul=true;else if(h.includes(2)&&h.includes(3)){if(cs[me]+1>=goal&&(s.cAt||0)<1)late=true;else pts=1}}
+  else if(h.includes(1)&&h.includes(2)&&(s.cAt||0)>=3)pts=1;
+  if(foul){cs[me]=Math.max(0,cs[me]-1);msg=h.length?'Foul: you hit the other cue ball! -1 point.':'Foul: your cue ball hit nothing! -1 point.'}
+  else if(pts){cs[me]++;msg='Point! Shoot again.'}
+  else msg=late?'The last point needs a wall hit first. No point.':'No point.';
+  if(cs[me]>=goal){over=true;msg=nm[me]+' wins '+cs[0]+' - '+cs[1]+'! 🎉';ui();return}
+  if(!pts){turn=other;swapCues()}
+  ui();
+}
+function caromScore(s){
+  const h=s.hits||[],cu=s.cush||0;
+  if(mode==='four'){if(!h.length||h.includes(1))return -50;if(h.includes(2)&&h.includes(3))return(cs[turn]+1>=goal&&(s.cAt||0)<1)?30:100;return h.length*10}
+  if(h.includes(1)&&h.includes(2))return(s.cAt||0)>=3?100:20+Math.min(s.cAt||0,3)*5;
+  return h.length*10+Math.min(cu,3)*2-(h.length?0:20);
+}
+function aiScore(s){
+  if(mode!=='pocket')return caromScore(s);
+  const p=s.pocketed,scr=p.includes(0),gm=groups[who];
+  if(p.includes(8))return(s.before===0&&!scr&&left(who)===0)?1000:-1000;
+  let foul=scr;
+  if(s.first===null)foul=true;
+  else if(!gm){if(s.first===8)foul=true}
+  else if(s.before>0){if(s.first===8||grp(s.first)!==gm)foul=true}
+  else if(s.first!==8)foul=true;
+  if(foul)return -100-(scr?20:0);
+  let sc=0;
+  for(const n of p){if(!n)continue;sc+=!gm?10:(grp(n)===gm?10:2)}
+  const q=balls.find(b=>b.n===0);
+  if(q){let m=1e9;for(const b of balls)if(b.n&&b.n!==8&&(!gm||grp(b.n)===gm))m=Math.min(m,Math.hypot(b.x-q.x,b.y-q.y));if(m<1e9)sc-=m/200}
+  return sc;
+}
+function aiSim(dry){
+  who=dry?0:1;
+  const cue=balls.find(b=>b.n===0);if(!cue)return false;
+  const saveB=JSON.stringify(balls),saveS=shot,angs=[];
+  const na=mode==='pocket'?36:90;for(let i=0;i<na;i++)angs.push(i*2*Math.PI/na);
+  for(const t of balls)if(t.n)angs.push(Math.atan2(t.y-cue.y,t.x-cue.x));
+  for(const t of balls)if(t.n)for(const p of pockets){const dx=p[0]-t.x,dy=p[1]-t.y,d=Math.hypot(dx,dy);angs.push(Math.atan2(t.y-dy/d*2*R-cue.y,t.x-dx/d*2*R-cue.x))}
+  let best=null;sim=true;
+  for(const a of angs)for(const pw of(mode==='pocket'?[16,28]:[16,24,34])){
+    balls=JSON.parse(saveB);
+    const q=balls.find(b=>b.n===0);q.vx=Math.cos(a)*pw;q.vy=Math.sin(a)*pw;
+    shot={first:null,pocketed:[],before:groups[who]?left(who):-1};
+    let f=0;while(f++<500){step();if(!moving())break}
+    const sc=aiScore(shot);
+    if(!best||sc>best.sc)best={sc,a,pw};
+  }
+  sim=false;balls=JSON.parse(saveB);shot=saveS;
+  if(!best)return false;
+  if(dry)return best;
+  const L=LV[lv];let a=best.a+(Math.random()-.5)*L.n,pw=best.pw*(1+(Math.random()-.5)*L.p);
+  if(Math.random()<L.m){a=Math.random()*Math.PI*2;pw=10+Math.random()*20}
+  fire(Math.cos(a)*pw,Math.sin(a)*pw);
+  return true;
+}
+function aiTurn(){
+  if(inHand){let x,y,k=0;do{x=M+R+Math.random()*(W/2-M);y=M+R+Math.random()*(H-2*M-2*R);k++}while(k<80&&balls.some(b=>b.n&&Math.hypot(b.x-x,b.y-y)<2*R+2));balls=[{n:0,x,y,vx:0,vy:0},...balls.filter(b=>b.n)];inHand=false;ui();placed={x,y,t:Date.now()}}
+  const cue=balls.find(b=>b.n===0);if(!cue)return;
+  if(aiSim())return;
+  const tg=balls.filter(b=>b.n&&(groups[1]?(left(1)>0?(b.n!==8&&grp(b.n)===groups[1]):b.n===8):b.n!==8));
+  let best=null;
+  for(const t of tg)for(const p of pockets){
+    const dx=p[0]-t.x,dy=p[1]-t.y,d=Math.hypot(dx,dy),ux=dx/d,uy=dy/d,gx=t.x-ux*2*R,gy=t.y-uy*2*R,cx=gx-cue.x,cy=gy-cue.y,cd=Math.hypot(cx,cy);
+    if(cd<1)continue;
+    const cut=(cx*ux+cy*uy)/cd;
+    if(cut<.5||blocked(cue.x,cue.y,gx,gy,cue,t)||blocked(t.x,t.y,p[0],p[1],t,null))continue;
+    const sc=cut*2-(cd+d)/600;
+    if(!best||sc>best.sc)best={sc,gx,gy,dist:cd+d};
+  }
+  let ang,pw;
+  if(best){ang=Math.atan2(best.gy-cue.y,best.gx-cue.x)+(Math.random()-.5)*.04;pw=Math.min(34,Math.max(9,best.dist*.012))}
+  else{const t=tg[0]||balls.find(b=>b.n);if(!t)return;ang=Math.atan2(t.y-cue.y,t.x-cue.x)+(Math.random()-.5)*.1;pw=16}
+  fire(Math.cos(ang)*pw,Math.sin(ang)*pw);
+}
+let balls=[],drag=null,turn,groups,inHand,over,shot,msg;
+const grp=n=>n<8?'s':'t';
+const left=i=>balls.filter(b=>b.n&&b.n!==8&&grp(b.n)===groups[i]).length;
+function rack(){
+  pend=null;moves=[];placed=null;sugg=null;pockets=mode==='pocket'?POCKETS:[];
+  if(mode!=='pocket'){caromSetup();return}
+  balls=[{n:0,x:200,y:200,vx:0,vy:0}];
+  turn=0;groups=[null,null];inHand=false;over=false;shot=null;msg='Break shot: hit the rack!';
+  const o=[1,9,2,10,8,3,11,4,12,5,13,6,14,7,15];let k=0;
+  for(let r=0;r<5;r++)for(let i=0;i<=r;i++)
+    balls.push({n:o[k++],x:560+r*R*1.75,y:200+(i-r/2)*R*2.04,vx:0,vy:0});
+  ui();
+}
+function ui(){
+  if(mode!=='pocket'){document.getElementById('s').textContent=(over?'':nm[turn]+'’s turn · ')+msg+'  [Player (white): '+cs[0]+' | Computer (yellow): '+cs[1]+' | first to '+goal+']';return}
+  const t=i=>groups[i]?(groups[i]==='s'?'solids':'stripes'):'open';
+  const head=over?'':nm[turn]+'’s turn · ';
+  document.getElementById('s').textContent=head+msg+(inHand&&!over&&turn===0?' Tap the table to place the cue ball.':'')+'  ['+nm[0]+': '+t(0)+' | '+nm[1]+': '+t(1)+']';
+}
+function moving(){return balls.some(b=>Math.hypot(b.vx,b.vy)>0.05)}
+function resolve(){
+  const s=shot;shot=null;if(mode!=='pocket'){resolveCarom(s);return}
+  const p=s.pocketed,scr=p.includes(0),me=turn,other=1-turn;
+  if(p.includes(8)){
+    const ok=s.before===0&&left(me)===0&&!scr;
+    over=true;
+    msg=ok?nm[me]+' wins! 🎉':nm[me]+' lost: 8-ball pocketed too early or with a scratch. '+nm[other]+' wins!';
+    ui();return;
+  }
+  let foul=scr;
+  if(s.first===null)foul=true;
+  else if(!groups[me]){if(s.first===8)foul=true}
+  else if(s.before>0){if(s.first===8||grp(s.first)!==groups[me])foul=true}
+  else if(s.first!==8)foul=true;
+  if(casual&&!scr)foul=false;
+  if(!foul&&!groups[me]){
+    const f=p.find(n=>n&&n!==8);
+    if(f){groups[me]=grp(f);groups[other]=groups[me]==='s'?'t':'s'}
+  }
+  const good=!foul&&p.some(n=>n&&n!==8);
+  if(foul){
+    const r=scr?'the cue ball went into a pocket':s.first===null?'the cue ball hit no ball':s.first===8?'the cue ball hit the 8-ball first':(groups[me]&&s.before>0?'the cue ball hit the other player’s ball first':'the 8-ball must be hit first now');
+    msg=nm[me]+' foul: '+r+'. '+(p.some(n=>n&&n!==8)?'Pocketed balls do not give another turn on a foul. ':'')+'Ball-in-hand.';inHand=true;turn=other;
+  }
+  else if(good){msg='Nice! Shoot again.'}
+  else{msg='No ball pocketed. The turn passes.';turn=other}
+  ui();
+}
+function step(){
+  for(let s=0;s<8;s++){
+    for(const b of balls){b.x+=b.vx/8;b.y+=b.vy/8}
+    for(let i=0;i<balls.length;i++)for(let j=i+1;j<balls.length;j++){
+      const a=balls[i],b=balls[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy);
+      if(d<2*R&&d>0){
+        if(shot&&shot.first===null){if(a.n===0)shot.first=b.n;else if(b.n===0)shot.first=a.n}
+        if(shot&&(a.n===0||b.n===0)){const o=a.n===0?b:a;if(!shot.hits)shot.hits=[];if(!shot.hits.includes(o.n)){shot.hits.push(o.n);if(shot.hits.length===2)shot.cAt=shot.cush||0}}
+        const nx=dx/d,ny=dy/d,p=(2*R-d)/2;
+        a.x-=nx*p;a.y-=ny*p;b.x+=nx*p;b.y+=ny*p;
+        const v=(a.vx-b.vx)*nx+(a.vy-b.vy)*ny;
+        if(v>0){a.vx-=v*nx;a.vy-=v*ny;b.vx+=v*nx;b.vy+=v*ny;if(v>1)snd(500+v*20,.05,Math.min(.35,v/25))}
+      }
+    }
+    for(let i=balls.length-1;i>=0;i--){
+      const b=balls[i];
+      if(pockets.some(p=>Math.hypot(b.x-p[0],b.y-p[1])<19)){
+        if(shot)shot.pocketed.push(b.n);snd(160,.3,.3);
+        balls.splice(i,1);continue;
+      }
+      if(b.x<M+R){b.x=M+R;if(shot&&b.n===0)shot.cush=(shot.cush||0)+1;snd(120,.06,Math.abs(b.vx)/30);b.vx=-b.vx*.95}
+      if(b.x>W-M-R){b.x=W-M-R;if(shot&&b.n===0)shot.cush=(shot.cush||0)+1;snd(120,.06,Math.abs(b.vx)/30);b.vx=-b.vx*.95}
+      if(b.y<M+R){b.y=M+R;if(shot&&b.n===0)shot.cush=(shot.cush||0)+1;snd(120,.06,Math.abs(b.vy)/30);b.vy=-b.vy*.95}
+      if(b.y>H-M-R){b.y=H-M-R;if(shot&&b.n===0)shot.cush=(shot.cush||0)+1;snd(120,.06,Math.abs(b.vy)/30);b.vy=-b.vy*.95}
+    }
+  }
+  for(const b of balls){b.vx*=.984;b.vy*=.984;const sp=Math.hypot(b.vx,b.vy);if(sp<.05){b.vx=b.vy=0;b.ph=0}else{b.ph=((b.ph||0)+Math.min(sp/R,1.2))%(Math.PI*2);b.dr=Math.atan2(b.vy,b.vx)}}
+  if(shot&&!pend&&!moving()&&!sim){calcMoves();resolve()}
+}
+function drawPool(){
+  const rr=(x,y,w,h,r)=>{g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()};
+  rr(0,0,W,H,20);g.fillStyle='#5a1418';g.fill();
+  const gr=g.createRadialGradient(W/2,H/2,40,W/2,H/2,460);gr.addColorStop(0,'#3cc487');gr.addColorStop(1,'#2aa56e');
+  g.fillStyle=gr;g.fillRect(M-12,M-12,W-2*M+24,H-2*M+24);
+  const cu=pts=>{g.beginPath();pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.closePath();g.fillStyle='#1c935d';g.fill()};
+  const nose=(x1,y1,x2,y2)=>{g.strokeStyle='#41c68b';g.lineWidth=1.5;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke()};
+  const e=22,hs=[[M+e,W/2-20],[W/2+20,W-M-e]];
+  for(const [a,b] of hs){
+    cu([[a,M],[b,M],[b+12,M-12],[a-12,M-12]]);nose(a,M,b,M);
+    cu([[a,H-M],[b,H-M],[b+12,H-M+12],[a-12,H-M+12]]);nose(a,H-M,b,H-M);
+  }
+  cu([[M,M+e],[M,H-M-e],[M-12,H-M-e+12],[M-12,M+e-12]]);nose(M,M+e,M,H-M-e);
+  cu([[W-M,M+e],[W-M,H-M-e],[W-M+12,H-M-e+12],[W-M+12,M+e-12]]);nose(W-M,M+e,W-M,H-M-e);
+  g.fillStyle='#fff';
+  const dot=(x,y)=>{g.beginPath();g.arc(x,y,2.2,0,7);g.fill()};
+  for(let k=1;k<4;k++){const x1=M+(W/2-M)*k/4,x2=W/2+(W/2-M)*k/4;dot(x1,8);dot(x2,8);dot(x1,H-8);dot(x2,H-8)}
+  for(let k=1;k<4;k++){const y=M+(H-2*M)*k/4;dot(8,y);dot(W-8,y)}
+  for(const p of pockets){
+    g.save();
+    if(p[0]===W/2){g.beginPath();if(p[1]<H/2)g.rect(0,16,W,H);else g.rect(0,0,W,H-16);g.clip()}
+    g.beginPath();g.arc(p[0],p[1],15,0,7);g.fillStyle='#2d2d30';g.fill();g.lineWidth=2;g.strokeStyle='#0b0b0d';g.stroke();
+    g.restore();
+  }
+}
+function drawTable(){
+  if(mode==='pocket'){drawPool();return}
+  const car=mode!=='pocket';
+  const wg=g.createLinearGradient(0,0,0,H);
+  wg.addColorStop(0,car?'#c9a878':'#8a5530');wg.addColorStop(1,car?'#a07e55':'#4a2a14');
+  g.fillStyle=wg;g.fillRect(0,0,W,H);
+  g.save();g.strokeStyle='rgba(0,0,0,.12)';g.lineWidth=1;g.beginPath();g.rect(0,0,W,M);g.rect(0,H-M,W,M);g.clip();
+  for(let i=0;i<10;i++){g.beginPath();g.moveTo(0,3+i*3.2);g.lineTo(W,5+i*3.2);g.stroke();g.beginPath();g.moveTo(0,H-30+i*3.2);g.lineTo(W,H-28+i*3.2);g.stroke()}
+  g.restore();
+  const fc=car?['#2f64e8','#1239ad']:['#2a9a63','#146a3e'];
+  const gr=g.createRadialGradient(W/2,H/2,40,W/2,H/2,460);gr.addColorStop(0,fc[0]);gr.addColorStop(1,fc[1]);
+  g.fillStyle=gr;g.fillRect(M-9,M-9,W-2*M+18,H-2*M+18);
+  const cu=pts=>{g.beginPath();pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.closePath();g.fillStyle=car?'#2250cf':'#0f6a3d';g.fill()};
+  const nose=(x1,y1,x2,y2)=>{g.strokeStyle='rgba(255,255,255,.28)';g.lineWidth=1.5;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke()};
+  const e=car?10:20,hs=car?[[M+e,W-M-e]]:[[M+e,W/2-24],[W/2+24,W-M-e]];
+  for(const [a,b] of hs){
+    cu([[a,M],[b,M],[b+9,M-9],[a-9,M-9]]);nose(a,M,b,M);
+    cu([[a,H-M],[b,H-M],[b+9,H-M+9],[a-9,H-M+9]]);nose(a,H-M,b,H-M);
+  }
+  cu([[M,M+e],[M,H-M-e],[M-9,H-M-e+9],[M-9,M+e-9]]);nose(M,M+e,M,H-M-e);
+  cu([[W-M,M+e],[W-M,H-M-e],[W-M+9,H-M-e+9],[W-M+9,M+e-9]]);nose(W-M,M+e,W-M,H-M-e);
+  g.fillStyle=car?'#fff':'#efe6c8';
+  const dm=(x,y)=>{g.beginPath();g.moveTo(x,y-3.5);g.lineTo(x+3,y);g.lineTo(x,y+3.5);g.lineTo(x-3,y);g.closePath();g.fill()};
+  if(car){for(let k=1;k<8;k++){const x=M+(W-2*M)*k/8;dm(x,9.5);dm(x,H-9.5)}}
+  else for(let k=1;k<4;k++){const x1=M+(W/2-M)*k/4,x2=W/2+(W/2-M)*k/4;dm(x1,9.5);dm(x2,9.5);dm(x1,H-9.5);dm(x2,H-9.5)}
+  for(let k=1;k<4;k++){const y=M+(H-2*M)*k/4;dm(9.5,y);dm(W-9.5,y)}
+  if(!car)for(const p of pockets){
+    g.beginPath();g.arc(p[0],p[1],26,0,7);g.fillStyle='#24160c';g.fill();g.lineWidth=2.5;g.strokeStyle='#9a7440';g.stroke();
+    const hg=g.createRadialGradient(p[0],p[1],2,p[0],p[1],21);hg.addColorStop(0,'#000');hg.addColorStop(.8,'#0a0a0a');hg.addColorStop(1,'#2a2a2a');
+    g.beginPath();g.arc(p[0],p[1],21,0,7);g.fillStyle=hg;g.fill();
+  }
+}
+function ball(b){
+  g.save();g.globalAlpha=.3;g.fillStyle='#000';g.beginPath();g.ellipse(b.x+2.5,b.y+3.5,R,R*.9,0,0,7);g.fill();g.restore();
+  const num=!b.c&&b.n>0,str=!b.c&&b.n>8,base=b.c||cols[str?b.n-8:b.n],ph=b.ph||0,dr=b.dr||0,fl=Math.cos(ph);
+  g.beginPath();g.arc(b.x,b.y,R,0,7);g.fillStyle=str?'#f4f4f4':base;g.fill();
+  g.save();g.beginPath();g.arc(b.x,b.y,R,0,7);g.clip();g.translate(b.x,b.y);
+  if(str){g.save();g.rotate(dr);const off=Math.sin(ph)*R*.9;g.fillStyle=base;g.fillRect(off-R*.55,-R,R*1.1,2*R);g.restore()}
+  const ox=Math.cos(dr)*Math.sin(ph)*R*.65,oy=Math.sin(dr)*Math.sin(ph)*R*.65;
+  if(fl>0){
+    if(num){g.beginPath();g.arc(ox,oy,4.6,0,7);g.fillStyle='#fff';g.fill();g.fillStyle='#000';g.font='bold 7px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(b.n,ox,oy+.5)}
+    else{g.beginPath();g.arc(ox,oy,2.2,0,7);g.fillStyle='rgba(0,0,0,.3)';g.fill()}
+  }
+  g.restore();
+  const gr=g.createRadialGradient(b.x-3.5,b.y-3.5,1,b.x,b.y,R*1.05);
+  gr.addColorStop(0,'rgba(255,255,255,.7)');gr.addColorStop(.35,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(0,0,0,.4)');
+  g.beginPath();g.arc(b.x,b.y,R,0,7);g.fillStyle=gr;g.fill();
+  if(b.c&&b.n===0){g.strokeStyle='rgba(0,0,0,.55)';g.lineWidth=2;g.beginPath();g.arc(b.x,b.y,R,0,7);g.stroke()}
+}
+function ballOld(b){
+  if(b.c){g.beginPath();g.arc(b.x,b.y,R,0,7);g.fillStyle=b.c;g.fill();if(b.n===0){g.strokeStyle='rgba(0,0,0,.5)';g.lineWidth=2;g.stroke()}return}
+  g.beginPath();g.arc(b.x,b.y,R,0,7);g.fillStyle=cols[b.n>8?b.n-8:b.n];g.fill();
+  if(b.n>8){g.save();g.beginPath();g.arc(b.x,b.y,R,0,7);g.clip();g.fillStyle='#fff';g.fillRect(b.x-R,b.y-4,2*R,8);g.restore()}
+  if(b.n){g.beginPath();g.arc(b.x,b.y,4.5,0,7);g.fillStyle='#fff';g.fill();g.fillStyle='#000';g.font='bold 7px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(b.n,b.x,b.y+.5)}
+}
+function drawStick(){
+  if(!pend)return;
+  const c=balls.find(b=>b.n===0);if(!c)return;
+  const p=Math.min(1,(Date.now()-pend.t)/140),d=R+3+(1-p)*(pend.sp/34*70+8);
+  g.save();g.strokeStyle='#e8c98a';g.lineWidth=5;g.lineCap='round';
+  g.beginPath();g.moveTo(c.x-pend.ux*d,c.y-pend.uy*d);g.lineTo(c.x-pend.ux*(d+160),c.y-pend.uy*(d+160));g.stroke();g.restore();
+}
+function calcMoves(){
+  moves=[];if(!prev)return;
+  for(const p of prev){
+    const b=balls.find(x=>x.n===p.n);
+    if(!b)moves.push({n:p.n,c:p.c,x0:p.x,y0:p.y,gone:true});
+    else if(Math.hypot(b.x-p.x,b.y-p.y)>4)moves.push({n:p.n,c:p.c,x0:p.x,y0:p.y,x1:b.x,y1:b.y});
+  }
+}
+function drawMoves(){
+  g.save();
+  for(const m of moves){
+    let col=m.c||cols[m.n>8?m.n-8:m.n];if(col==='#111')col='#ccc';
+    g.globalAlpha=.55;g.strokeStyle=col;g.lineWidth=2;g.setLineDash([4,4]);
+    g.beginPath();g.arc(m.x0,m.y0,R,0,7);g.stroke();
+    if(m.gone){g.setLineDash([]);g.strokeStyle='#4dff88';g.beginPath();g.arc(m.x0,m.y0,R+3,0,7);g.stroke();continue}
+    g.beginPath();g.moveTo(m.x0,m.y0);g.lineTo(m.x1,m.y1);g.stroke();
+    const an=Math.atan2(m.y1-m.y0,m.x1-m.x0);g.setLineDash([]);
+    g.beginPath();g.moveTo(m.x1,m.y1);g.lineTo(m.x1-Math.cos(an-.5)*R,m.y1-Math.sin(an-.5)*R);g.moveTo(m.x1,m.y1);g.lineTo(m.x1-Math.cos(an+.5)*R,m.y1-Math.sin(an+.5)*R);g.stroke();
+  }
+  g.restore();
+  if(placed&&Date.now()-placed.t<3000){
+    const r=R+4+((Date.now()-placed.t)/80)%12;
+    g.save();g.strokeStyle='#ffd400';g.lineWidth=3;g.beginPath();g.arc(placed.x,placed.y,r,0,7);g.stroke();g.restore();
+  }
+}
+let hintFrame=false;
+function idleHint(){
+  const e=document.getElementById('hint');let t=(showMoves&&moves.length&&!over&&turn!==1)?'Faded circles show where the balls were before the last shot. ':'';
+  if(turn!==1&&!over){
+    if(mode==='four')t+='Tip: drag back to aim. Orange numbers show where the ball touches a wall. Your last point needs a wall touch.';
+    else if(mode==='three')t+='Tip: drag back to aim. You need 3 wall touches (orange numbers) before the 2nd ball.';
+  }
+  if(e.textContent!==t)e.textContent=t;
+}
+function setHint(sh){
+  hintFrame=true;
+  const h=sh.hits;let t;
+  if(mode==='four'){
+    const last=cs[turn]+1>=goal,red=h.filter(n=>n>=2).length;
+    if(!h.length)t='✗ Your cue ball hits nothing. Aim at a red ball.';
+    else if(h.includes(1))t='✗ Careful: you hit the other cue ball. That is a foul.';
+    else if(red<2)t='Red balls hit: '+red+' of 2. Hit both red balls to score.';
+    else if(last&&sh.cAt<1)t='✗ Both red balls hit, but your last point needs a wall touch first. Try a bank shot.';
+    else t='✓ This shot scores!'+(last?' (The wall touch is OK.)':'');
+  }else{
+    const y=h.includes(1),r=h.includes(2);
+    if(y&&r)t=sh.cAt>=3?'✓ This shot scores! Walls before the 2nd ball: '+sh.cAt:'✗ Both balls hit, but only '+sh.cAt+' of 3 walls before the 2nd ball. Aim at a wall first.';
+    else t='Walls touched: '+sh.cush+' of 3.  Yellow ball: '+(y?'✓':'✗')+'  Red ball: '+(r?'✓':'✗');
+  }
+  t=hintPre+t;const e=document.getElementById('hint');if(e.textContent!==t)e.textContent=t;
+}
+let who=1,sugg=null,sugMode=false,hintPre='';
+const LV={easy:{n:.07,p:.35,m:.25},normal:{n:.03,p:.12,m:.07},hard:{n:.012,p:0,m:0}};let lv='normal';let prev=null,moves=[],placed=null,showMoves=true,pend=null,casual=true;
+function showSugg(c0){
+  const ux=Math.cos(sugg.a),uy=Math.sin(sugg.a),dd=sugg.pw/34*150,pct=Math.round(sugg.pw/34*100);
+  sugMode=true;hintPre='Suggested shot (gold line), power '+pct+'%. Drag to the gold circle and let go. ';
+  drawPath(c0,ux,uy,dd);
+  sugMode=false;hintPre='';
+  g.setLineDash([]);g.strokeStyle='#ffd400';g.lineWidth=3;g.beginPath();g.arc(c0.x-ux*dd,c0.y-uy*dd,12,0,7);g.stroke();
+  if(mode==='pocket'){hintFrame=true;const e=document.getElementById('hint'),t='Suggested shot (gold line), power '+pct+'%. Drag to the gold circle and let go.';if(e.textContent!==t)e.textContent=t}
+}
+let guide=true;
+function drawPath(cue,ux,uy,pw){
+  if(!guide&&!sugMode)return;
+  const sp=Math.min(pw,150)/150*34,orig=balls,saveS=shot,paths={},ct={set:false,x:0,y:0};let wc=0;const wp=[];
+  const start={};for(const b of orig)start[b.n]=[b.x,b.y];
+  balls=JSON.parse(JSON.stringify(orig));sim=true;shot={first:null,pocketed:[],before:-1};
+  const q=balls.find(b=>b.n===0);q.vx=ux*sp;q.vy=uy*sp;
+  for(let f=0;f<160;f++){
+    step();
+    if(shot.first!==null&&!ct.set){const k=balls.find(b=>b.n===0);if(k){ct.x=k.x;ct.y=k.y;ct.set=true}}
+    {const kc=balls.find(b=>b.n===0);if(kc&&(shot.cush||0)>wc){wc=shot.cush;wp.push([kc.x,kc.y])}}
+    if(f%2===0)for(const b of balls)if(Math.hypot(b.vx,b.vy)>.3)(paths[b.n]=paths[b.n]||[]).push([b.x,b.y]);
+    if(!moving())break;
+  }
+  const out=shot.pocketed.slice(),sh={hits:(shot.hits||[]).slice(),cush:shot.cush||0,cAt:shot.cAt||0};
+  sim=false;balls=orig;shot=saveS;
+  const line=(n,dash,col,w)=>{
+    const pts=paths[n];if(!pts)return;
+    g.strokeStyle=col;g.lineWidth=w;g.setLineDash(dash);
+    g.beginPath();g.moveTo(start[n][0],start[n][1]);for(const p of pts)g.lineTo(p[0],p[1]);g.stroke();
+  };
+  for(const n in paths)if(+n!==0)line(n,[],cols[n>8?n-8:n]==='#111'?'#ddd':cols[n>8?n-8:n],2.5);
+  line(0,sugMode?[]:[6,6],sugMode?'#ffd400':'rgba(255,255,255,.85)',sugMode?3:1.5);
+  g.setLineDash([]);
+  if(ct.set){g.strokeStyle='#fff';g.lineWidth=1.5;g.beginPath();g.arc(ct.x,ct.y,R,0,7);g.stroke()}
+  if(out.includes(0)&&paths[0]){
+    const e=paths[0][paths[0].length-1];
+    g.strokeStyle='#ff4d4d';g.lineWidth=3;g.beginPath();g.moveTo(e[0]-7,e[1]-7);g.lineTo(e[0]+7,e[1]+7);g.moveTo(e[0]+7,e[1]-7);g.lineTo(e[0]-7,e[1]+7);g.stroke();
+  }
+  for(const n of out)if(n&&start[n]){g.strokeStyle='#4dff88';g.lineWidth=3;g.beginPath();g.arc(start[n][0],start[n][1],R+3,0,7);g.stroke()}
+  if(mode!=='pocket'){
+    wp.forEach((p,i)=>{g.fillStyle='#ff9f1a';g.beginPath();g.arc(p[0],p[1],8,0,7);g.fill();g.fillStyle='#000';g.font='bold 10px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(i+1,p[0],p[1]+.5)});
+    setHint(sh);
+  }
+}
+function draw(){
+  hintFrame=false;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,800,500);const V=view();g.setTransform(V.a,V.b,V.c,V.d,400,250);g.translate(-W/2,-H/2);
+  drawTable();
+  
+  
+  {const c0=balls.find(b=>b.n===0);if(sugg&&c0&&!moving()&&!shot&&!over&&turn===0&&!inHand)showSugg(c0)}
+  const cue=balls.find(b=>b.n===0);
+  if(drag&&cue&&!moving()&&!inHand&&!over){
+    const dx=cue.x-drag.x,dy=cue.y-drag.y,d=Math.hypot(dx,dy)||1,ux=dx/d,uy=dy/d,pw=Math.min(d,150);
+    g.strokeStyle='rgba(255,255,255,.7)';g.setLineDash([6,6]);g.lineWidth=1.5;
+    drawPath(cue,ux,uy,pw);g.setLineDash([]);
+    g.strokeStyle='#e8c98a';g.lineWidth=5;g.lineCap='round';
+    g.beginPath();g.moveTo(cue.x-ux*(R+4+pw*.4),cue.y-uy*(R+4+pw*.4));g.lineTo(cue.x-ux*(R+4+pw*.4+160),cue.y-uy*(R+4+pw*.4+160));g.stroke();
+    g.fillStyle='#fff';g.fillRect(10,H-14,pw/150*120,6);
+  }
+  if(showMoves)drawMoves();balls.forEach(ball);drawStick();
+}
+function loop(){
+  if(pend&&Date.now()-pend.t>=140){const c=balls.find(b=>b.n===0);if(c){c.vx=pend.vx;c.vy=pend.vy}pend=null}
+  step();draw();if(!hintFrame)idleHint();
+  {const sb=document.getElementById('sg'),tx=sugg?'Hide best shot':'Show best shot';if(sb.textContent!==tx)sb.textContent=tx}
+  if(turn===1&&!over&&!shot&&!moving()&&!aiWait){aiWait=true;setTimeout(()=>{aiWait=false;if(turn===1&&!over&&!shot&&!moving())aiTurn()},1000)}
+  requestAnimationFrame(loop)
+}
+let rot=0,tilt=0;
+function view(){
+  const th=rot*Math.PI/180,ct=Math.cos(tilt*Math.PI/180),cs=Math.cos(th),sn=Math.sin(th);
+  const bw=Math.abs(W*cs)+Math.abs(H*sn),bh=Math.abs(W*sn)+Math.abs(H*cs);
+  const k=Math.min(780/bw,480/(bh*ct));
+  return{a:k*cs,b:k*ct*sn,c:-k*sn,d:k*ct*cs};
+}
+function pos(e){
+  const r=c.getBoundingClientRect(),V=view(),x=(e.clientX-r.left)*800/r.width-400,y=(e.clientY-r.top)*500/r.height-250,det=V.a*V.d-V.b*V.c;
+  return{x:(V.d*x-V.c*y)/det+W/2,y:(-V.b*x+V.a*y)/det+H/2};
+}
+c.addEventListener('pointerdown',e=>{
+  if(!ac)try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(x){}
+  if(over||shot||moving()||turn===1)return;
+  const p=pos(e);
+  if(inHand){
+    const x=Math.min(W-M-R,Math.max(M+R,p.x)),y=Math.min(H-M-R,Math.max(M+R,p.y));
+    const rest=balls.filter(b=>b.n!==0);
+    if(rest.some(b=>Math.hypot(b.x-x,b.y-y)<2*R))return;
+    balls=[{n:0,x,y,vx:0,vy:0},...rest];inHand=false;placed={x,y,t:Date.now()};ui();return;
+  }
+  drag=p;c.setPointerCapture(e.pointerId);
+});
+c.addEventListener('pointermove',e=>{if(drag)drag=pos(e)});
+c.addEventListener('pointerup',()=>{
+  const cue=balls.find(b=>b.n===0);
+  if(drag&&cue&&!moving()&&!shot&&!inHand&&!over){
+    const dx=cue.x-drag.x,dy=cue.y-drag.y,d=Math.hypot(dx,dy);
+    if(d>8){
+      const p=Math.min(d,150)/150*34;fire(dx/d*p,dy/d*p);
+      
+    }
+  }
+  drag=null;
+});
+document.getElementById('r').onclick=rack;
+document.getElementById('m').onclick=e=>{mute=!mute;e.target.textContent='Sound: '+(mute?'off':'on')};
+document.getElementById('vr').oninput=e=>{rot=+e.target.value};
+document.getElementById('vt').oninput=e=>{tilt=+e.target.value};
+document.getElementById('gd').onclick=e=>{guide=!guide;e.target.textContent='Guide: '+(guide?'on':'off')};
+
+document.getElementById('lv').onchange=e=>{lv=e.target.value};
+document.getElementById('rl').onchange=e=>{casual=e.target.value==='casual'};
+document.getElementById('sg').onclick=()=>{
+  if(sugg){sugg=null;return}
+  if(turn!==0||over||shot||moving()||inHand)return;
+  const b=aiSim(true);
+  if(b)sugg=b;
+};
+document.getElementById('mv').onclick=e=>{showMoves=!showMoves;e.target.textContent='Moves: '+(showMoves?'on':'off')};
+document.querySelectorAll('#ov button').forEach(b=>b.onclick=()=>{
+  mode=b.dataset.m;
+  if(!ac)try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(x){}
+  rack();document.getElementById('ov').classList.add('h');
+});
+document.getElementById('mn').onclick=()=>document.getElementById('ov').classList.remove('h');
+rack();loop();
+</script>
+</body>
+</html>
